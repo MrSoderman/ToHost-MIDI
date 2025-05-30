@@ -28,16 +28,16 @@
 ; 10 bytes
 %macro WAITVBL 0
 %%retrace_start:
-in al, dx
-and al, 8 ; Test the 4th bit
-jz %%retrace_start
+IN AL,DX
+AND AL,8 ; Test the 4th bit
+JZ %%retrace_start
 %%retrace_end:
-in al, dx
-and al, 8
-jnz %%retrace_end
+IN AL,DX
+AND AL,8
+JNZ %%retrace_end
 %endmacro
 
-jmp over			; 3 bytes (fill with NOP)
+JMP over			; 3 bytes (fill with NOP)
 ModeInfoTable		; 256 byte table
 TIMES 40 db 0		;
 LFB dd 0			; Physical 0000:7c2b
@@ -47,7 +47,7 @@ over:
 ORG 7C00h
 BITS 16
 ; section .text
-jmp 0:$+5           ; CS=0:EIP points next instruction
+JMP 0:$+5           ; CS=0:EIP points next instruction
 PUSH    CS			; 1 byte
 PUSH    CS			; 1 byte
 POP     DS			; 1 byte
@@ -55,24 +55,24 @@ POP     ES			; 1 byte
 CLD					; 1 byte
 
 CLI					; 1 byte
-MOV ax,0x9000		; 3-5 bytes
-MOV ss,ax			; 2 bytes
-MOV sp,0xffff		; 3-5 bytes
+MOV AX,0x9000		; 3-5 bytes
+MOV SS,AX			; 2 bytes
+MOV SP,0xffff		; 3-5 bytes
 STI					; 1 byte
 
 ; Disable NMI
 IN AL,70h
-OR AL, 80h ; Disables NMI (use AND AL, 7Fh to enable NMI)
-OUT 70h, AL
+OR AL,80h ; Disables NMI (use AND AL,7Fh to enable NMI)
+OUT 70h,AL
 ; OR 40, AND BF
 
-mov di, ModeInfoTable	; 3 bytes
-mov ax,04f01h			; 3 bytes
-mov cx,4114h			; 3 bytes 4115 = 32bit
-int 10h					; 2 bytes
-mov ax,04F02h			; 3 bytes
-mov bx,4114h			; 3 bytes
-int 10h					; 2 bytes
+MOV DI, ModeInfoTable	; 3 bytes
+MOV AX,04f01h			; 3 bytes
+MOV CX,4114h			; 3 bytes 4115 = 32bit
+INT 10h					; 2 bytes
+MOV AX,04F02h			; 3 bytes
+MOV BX,4114h			; 3 bytes
+INT 10h					; 2 bytes
 
 ; Enable A20
 MOV     AL,0D1h			; 2 bytes
@@ -209,30 +209,30 @@ BITS 32
 ; IN AL,DX
 ; AND AL,64
 ; JNE notyet
-mov dx,817
-mov al,63
-out dx,al
+MOV DX,817
+MOV AL,63
+OUT DX,AL
 
 ; out  1020,0 ; Interrupts off 
-mov dx,1019
-mov al,128
-out dx,al
+MOV DX,1019
+MOV AL,128
+OUT DX,AL
 
-mov dx,1016 ; 38400 baud word
-mov al,3
-out dx,al
-inc dx
-mov al,0
-out dx,al
+MOV DX,1016 ; 38400 baud word
+MOV AL,3
+OUT DX,AL
+INC DX
+MOV AL,0
+OUT DX,AL
 
-mov dx,1019 ; 1 start bit, 8 data bits, 1 stop bit, no parity bit
-mov al,3
-out dx,al
+MOV DX,1019 ; 1 start bit, 8 data bits, 1 stop bit, no parity bit
+MOV AL,3
+OUT DX,AL
 
-inc dx
-mov al,11
-out dx,al
-; out  1017,00h
+INC DX
+MOV AL,11
+OUT DX,AL
+; OUT 1017,00h
 
 MOV ECX,0
 MOV EBX,128
@@ -293,5 +293,5 @@ MOV DX,816
 OUT DX,AL               ; POKE 816,AL
 SKIPMPUWRITE:
 
-jmp mainloop
+JMP mainloop
 ; TIMES 1474560-($-$$) DB 0 ; Complete 1.44 MB floppy-sized image

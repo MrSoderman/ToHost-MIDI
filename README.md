@@ -20,9 +20,10 @@ To shut down, simply power off the computer.
 
 ### Installation
 
-1. Burn the ISO to CD/DVD/BD with any USB burning software (e.g., Balena Etcher).  
-2. Ensure booting from external media is enabled, boot order is correct, and SATA-native mode is disabled.  
-3. Some PCs may require a keyboard to boot.
+1. Assemble the code using the NASM assembler.
+2. Put the assembled binary on a floppy disk or burn it as an ISO to CD/DVD/BD using any USB burning software (e.g., Balena Etcher).
+3. Ensure booting from external media is enabled, the boot order is correct, and SATA-native mode is disabled.
+4. Note that some PCs may require a keyboard to boot.
 
 ---
 
