@@ -6,8 +6,8 @@
 
 ### Getting Started
 
-Boot the computer from the media.  
-No changes to hardware or storage.  
+To start, simply boot the computer from the media.
+No changes will be made to the hardware or storage.
 To shut down, simply power off the computer.
 
 **Requires:**  
