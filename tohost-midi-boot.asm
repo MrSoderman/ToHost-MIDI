@@ -29,7 +29,7 @@
 %macro WAITVBL 0
 %%retrace_start:
 IN AL,DX
-AND AL,8 ; Test the 4th bit
+AND AL,8                ; Test the 4th bit
 JZ %%retrace_start
 %%retrace_end:
 IN AL,DX
@@ -85,7 +85,7 @@ MOV     AL,2            ; 2 bytes
 OUT     92h,AL          ; 2 bytes
 MOV     [BDRV],DL       ; 3-5 bytes
 LGDT    [GDT]           ; LIDT, IDTR 5 bytes
-MOV     EAX,1           ; Zero based sector, after MBR
+MOV     EAX,1           ; Zero-based sector, after MBR
 
 L0:
 PUSH    EAX             ; 1 byte
@@ -157,7 +157,7 @@ A32                     ; Add32 for next instruction
 MOVSB                   ; Copy 2 byte together with REP and A32
 MOV     EAX,CR0         ; 3 bytes
 AND     AL,0FEh         ; 2 byte
-MOV 	CR0,EAX         ; 3 bytes
+MOV     CR0,EAX         ; 3 bytes
 PUSH    CS              ; 1 byte
 PUSH    CS              ; 1 byte (Restore segments)
 POP     DS              ; 1 byte
