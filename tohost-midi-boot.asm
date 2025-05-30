@@ -172,25 +172,25 @@ DSEG:   EQU     8*2
 GDT:
 
 ; Null segment (used for GDT start & length storage)
-DW      .ENDD-GDT           ; limit 16bit
-DD      GDT                 ; base 24bits + type 8bits
-DW      0                   ; limit 4bits more + flags + base last bits 24-31
+DW      .ENDD-GDT       ; limit 16bit
+DD      GDT             ; base 24bits + type 8bits
+DW      0               ; limit 4bits more + flags + base last bits 24-31
 
 ; Code segment
 ; $-gdt, gdt2 label coming up next line
 DW      0FFFFh
 DW      0
 DB      0
-DB      10011010b           ; (9ah) type (11111010 CODE-USER)
-DB      11001111b           ; (cfh) last 4 is flags
+DB      10011010b       ; (9ah) type (11111010 CODE-USER)
+DB      11001111b       ; (cfh) last 4 is flags
 DB      0
 
 ; Data & stack segments
 DW      0FFFFh
 DW      0
 DB      0
-DB      10010010b           ; (92h) present, ring0, data, expand up, writable (11110010 DATA&STACK-USER)
-DB      11001111b           ; (cfh) page granular, 32bit
+DB      10010010b       ; (92h) present, ring0, data, expand up, writable (11110010 DATA&STACK-USER)
+DB      11001111b       ; (cfh) page granular, 32bit
 DB      0
 
 .ENDD:
@@ -213,19 +213,19 @@ MOV DX,817
 MOV AL,63
 OUT DX,AL
 
-; out  1020,0 ; Interrupts off 
+; OUT  1020,0           ; Interrupts off 
 MOV DX,1019
 MOV AL,128
 OUT DX,AL
 
-MOV DX,1016 ; 38400 baud word
+MOV DX,1016             ; 38400 baud word
 MOV AL,3
 OUT DX,AL
 INC DX
 MOV AL,0
 OUT DX,AL
 
-MOV DX,1019 ; 1 start bit, 8 data bits, 1 stop bit, no parity bit
+MOV DX,1019             ; 1 start bit, 8 data bits, 1 stop bit, no parity bit
 MOV AL,3
 OUT DX,AL
 
