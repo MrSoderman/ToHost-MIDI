@@ -68,7 +68,7 @@ OUT     70h,AL
 
 MOV DI, ModeInfoTable   ; 3 bytes
 MOV AX,04f01h           ; 3 bytes
-MOV CX,4114h            ; 3 bytes 4115 = 32bit
+MOV CX,4114h            ; 3 bytes 4115 = 32-bit
 INT 10h                 ; 2 bytes
 MOV AX,04F02h           ; 3 bytes
 MOV BX,4114h            ; 3 bytes
@@ -92,7 +92,7 @@ PUSH    EAX             ; 1 byte
 CALL    Read            ; Read from disk to ES:7E00h 2-5 bytes
 CALL    Copy            ; Copy from buffer to protected mode 2-5 bytes
 POP     EAX             ; 1 byte (2 bytes if rmode) 1 byte
-INC     EAX             ; Next sector 2 byte (1 if 32bit pmode) 1 byte
+INC     EAX             ; Next sector 2 byte (1 if 32-bit pmode) 1 byte
 DEC     WORD [SECT]     ; Check if ended 3 bytes
 JNZ     L0              ; 2 bytes
 
@@ -107,7 +107,7 @@ MOV     CR0,EAX         ; Go to protected mode 3 bytes
 JMP DWORD CSEG:00100000h ; Jump to copied code in 1MB 5 bytes
 
 ; Read from disk to ES:7E00h
-; In:    EAX        - zero based sector
+; In:    EAX        - zero-based sector
 ;        [ES:7E00h] - 512 bytes buffer
 Read:
 CDQ                     ; EDX=0 2 bytes if rmode 1 byte
@@ -172,9 +172,9 @@ DSEG:   EQU     8*2
 GDT:
 
 ; Null segment (used for GDT start & length storage)
-DW      .ENDD-GDT       ; limit 16bit
-DD      GDT             ; base 24bits + type 8bits
-DW      0               ; limit 4bits more + flags + base last bits 24-31
+DW      .ENDD-GDT       ; limit 16-bit
+DD      GDT             ; base 24-bit + type 8-bit
+DW      0               ; limit 4 bits more + flags + base last bits 24-31
 
 ; Code segment
 ; $-gdt, gdt2 label coming up next line
@@ -182,15 +182,15 @@ DW      0FFFFh
 DW      0
 DB      0
 DB      10011010b       ; (9ah) type (11111010 CODE-USER)
-DB      11001111b       ; (cfh) last 4 is flags
+DB      11001111b       ; (0CFh) last 4 bits are flags
 DB      0
 
 ; Data & stack segments
 DW      0FFFFh
 DW      0
 DB      0
-DB      10010010b       ; (92h) present, ring0, data, expand up, writable (11110010 DATA&STACK-USER)
-DB      11001111b       ; (cfh) page granular, 32bit
+DB      10010010b       ; (92h) present, ring0, data, expand up, writable (11110010 DATA & STACK-USER)
+DB      11001111b       ; (cfh) page granular, 32-bit
 DB      0
 
 .ENDD:
