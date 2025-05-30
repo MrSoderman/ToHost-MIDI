@@ -2,8 +2,6 @@
 
 ## Installation Notes
 
-Created by **Jimmy Söderman Sers**
-
 ---
 
 ### Getting Started
