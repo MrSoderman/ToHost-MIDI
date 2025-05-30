@@ -37,33 +37,33 @@ AND AL,8
 JNZ %%retrace_end
 %endmacro
 
-JMP over            ; 3 bytes (fill with NOP)
-ModeInfoTable       ; 256 byte table
-TIMES 40 db 0       ;
-LFB dd 0            ; Physical 0000:7c2b
-TIMES 212 db 0      ;
-                    ; 0x7c0 instead of 0
+JMP over                ; 3 bytes (fill with NOP)
+ModeInfoTable           ; 256 byte table
+TIMES 40 db 0           ;
+LFB dd 0                ; Physical 0000:7c2b
+TIMES 212 db 0          ;
+                        ; 0x7c0 instead of 0
 over:
 ORG 7C00h
 BITS 16
 ; section .text
-JMP 0:$+5           ; CS=0:EIP points next instruction
-PUSH    CS          ; 1 byte
-PUSH    CS          ; 1 byte
-POP     DS          ; 1 byte
-POP     ES          ; 1 byte
-CLD                 ; 1 byte
+JMP 0:$+5               ; CS=0:EIP points next instruction
+PUSH    CS              ; 1 byte
+PUSH    CS              ; 1 byte
+POP     DS              ; 1 byte
+POP     ES              ; 1 byte
+Cylinder                ; 1 byte
 
-CLI                 ; 1 byte
-MOV AX,0x9000       ; 3-5 bytes
-MOV SS,AX           ; 2 bytes
-MOV SP,0xffff       ; 3-5 bytes
-STI                 ; 1 byte
+CLI                     ; 1 byte
+MOV     AX,0x9000       ; 3-5 bytes
+MOV     SS,AX           ; 2 bytes
+MOV     SP,0xffff       ; 3-5 bytes
+STI                     ; 1 byte
 
 ; Disable NMI
-IN AL,70h
-OR AL,80h ; Disables NMI (use AND AL,7Fh to enable NMI)
-OUT 70h,AL
+IN      AL,70h
+OR      AL,80h          ; Disables NMI (use AND AL,7Fh to enable NMI)
+OUT     70h,AL
 ; OR 40, AND BF
 
 MOV DI, ModeInfoTable   ; 3 bytes
@@ -84,7 +84,7 @@ OUT     60h,AL          ; 2 bytes
 MOV     AL,2            ; 2 bytes
 OUT     92h,AL          ; 2 bytes
 MOV     [BDRV],DL       ; 3-5 bytes
-LGDT	[GDT]           ; LIDT, IDTR 5 bytes
+LGDT    [GDT]           ; LIDT, IDTR 5 bytes
 MOV     EAX,1           ; Zero based sector, after MBR
 
 L0:
@@ -101,9 +101,9 @@ MOV     AL,0Ch          ; 2 bytes
 OUT     DX,AL           ; 1 byte
 CLI                     ; 1 byte
                         ; LIGDT here
-MOV	EAX,CR0             ; 3 bytes
+MOV     EAX,CR0         ; 3 bytes
 OR      AL,1            ; acc, imm 2 bytes
-MOV	CR0,EAX             ; Go to protected mode 3 bytes
+MOV     CR0,EAX         ; Go to protected mode 3 bytes
 JMP DWORD CSEG:00100000h ; Jump to copied code in 1MB 5 bytes
 
 ; Read from disk to ES:7E00h
