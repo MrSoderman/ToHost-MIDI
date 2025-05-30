@@ -37,28 +37,28 @@ AND AL,8
 JNZ %%retrace_end
 %endmacro
 
-JMP over			; 3 bytes (fill with NOP)
-ModeInfoTable		; 256 byte table
-TIMES 40 db 0		;
-LFB dd 0			; Physical 0000:7c2b
-TIMES 212 db 0		;
-					; 0x7c0 instead of 0
+JMP over            ; 3 bytes (fill with NOP)
+ModeInfoTable       ; 256 byte table
+TIMES 40 db 0       ;
+LFB dd 0            ; Physical 0000:7c2b
+TIMES 212 db 0      ;
+                    ; 0x7c0 instead of 0
 over:
 ORG 7C00h
 BITS 16
 ; section .text
 JMP 0:$+5           ; CS=0:EIP points next instruction
-PUSH    CS			; 1 byte
-PUSH    CS			; 1 byte
-POP     DS			; 1 byte
-POP     ES			; 1 byte
-CLD					; 1 byte
+PUSH    CS          ; 1 byte
+PUSH    CS          ; 1 byte
+POP     DS          ; 1 byte
+POP     ES          ; 1 byte
+CLD                 ; 1 byte
 
-CLI					; 1 byte
-MOV AX,0x9000		; 3-5 bytes
-MOV SS,AX			; 2 bytes
-MOV SP,0xffff		; 3-5 bytes
-STI					; 1 byte
+CLI                 ; 1 byte
+MOV AX,0x9000       ; 3-5 bytes
+MOV SS,AX           ; 2 bytes
+MOV SP,0xffff       ; 3-5 bytes
+STI                 ; 1 byte
 
 ; Disable NMI
 IN AL,70h
@@ -66,45 +66,45 @@ OR AL,80h ; Disables NMI (use AND AL,7Fh to enable NMI)
 OUT 70h,AL
 ; OR 40, AND BF
 
-MOV DI, ModeInfoTable	; 3 bytes
-MOV AX,04f01h			; 3 bytes
-MOV CX,4114h			; 3 bytes 4115 = 32bit
-INT 10h					; 2 bytes
-MOV AX,04F02h			; 3 bytes
-MOV BX,4114h			; 3 bytes
-INT 10h					; 2 bytes
+MOV DI, ModeInfoTable   ; 3 bytes
+MOV AX,04f01h           ; 3 bytes
+MOV CX,4114h            ; 3 bytes 4115 = 32bit
+INT 10h                 ; 2 bytes
+MOV AX,04F02h           ; 3 bytes
+MOV BX,4114h            ; 3 bytes
+INT 10h                 ; 2 bytes
 
 ; Enable A20
-MOV     AL,0D1h			; 2 bytes
-OUT     64h,AL			; 2 bytes
-MOV     AL,0DFh			; 2 bytes
-OUT     60h,AL			; 2 bytes
+MOV     AL,0D1h         ; 2 bytes
+OUT     64h,AL          ; 2 bytes
+MOV     AL,0DFh         ; 2 bytes
+OUT     60h,AL          ; 2 bytes
 
-; Enable PS/2 a20
-MOV     AL,2		; 2 bytes
-OUT     92h,AL		; 2 bytes
-MOV     [BDRV],DL	; 3-5 bytes
-LGDT	[GDT]		; LIDT, IDTR 5 bytes
-MOV     EAX,1		; Zero based sector, after MBR
+; Enable PS/2 A20
+MOV     AL,2            ; 2 bytes
+OUT     92h,AL          ; 2 bytes
+MOV     [BDRV],DL       ; 3-5 bytes
+LGDT	[GDT]           ; LIDT, IDTR 5 bytes
+MOV     EAX,1           ; Zero based sector, after MBR
 
 L0:
-PUSH    EAX			; 1 byte
-CALL    Read		; Read from disk to ES:7E00h 2-5 bytes
-CALL    Copy		; Copy from buffer to protected mode 2-5 bytes
-POP     EAX			; 1 byte (2 bytes if rmode) 1 byte
-INC     EAX			; Next sector 2 byte (1 if 32bit pmode) 1 byte
-DEC     WORD [SECT]	; Check if ended 3 bytes
-JNZ     L0			; 2 bytes
+PUSH    EAX             ; 1 byte
+CALL    Read            ; Read from disk to ES:7E00h 2-5 bytes
+CALL    Copy            ; Copy from buffer to protected mode 2-5 bytes
+POP     EAX             ; 1 byte (2 bytes if rmode) 1 byte
+INC     EAX             ; Next sector 2 byte (1 if 32bit pmode) 1 byte
+DEC     WORD [SECT]     ; Check if ended 3 bytes
+JNZ     L0              ; 2 bytes
 
-MOV     DX,3F2h		; Shut down the floppy motor to turn off the LED 3 bytes
-MOV     AL,0Ch		; 2 bytes
-OUT     DX,AL		; 1 byte
-CLI					; 1 byte
-					; LIGDT here
-MOV	EAX,CR0			; 3 bytes
-OR      AL,1		; acc, imm 2 bytes
-MOV	CR0,EAX			; Go to protected mode 3 bytes
-JMP     DWORD CSEG:00100000h ; Jump to copied code in 1MB 5 bytes
+MOV     DX,3F2h         ; Shut down the floppy motor to turn off the LED 3 bytes
+MOV     AL,0Ch          ; 2 bytes
+OUT     DX,AL           ; 1 byte
+CLI                     ; 1 byte
+                        ; LIGDT here
+MOV	EAX,CR0             ; 3 bytes
+OR      AL,1            ; acc, imm 2 bytes
+MOV	CR0,EAX             ; Go to protected mode 3 bytes
+JMP DWORD CSEG:00100000h ; Jump to copied code in 1MB 5 bytes
 
 ; Read from disk to ES:7E00h
 ; In:    EAX        - zero based sector
@@ -115,9 +115,9 @@ MOV     EBX,18          ; Sectors per track 3 bytes
 DIV     EBX             ; EAX=Track, EDX=sector-1. 3 bytes
 MOV     CX,DX           ; CL=Sector-1, CH=0. 2 bytes
 INC     CX              ; CL=Sector number. 1 byte
-XOR     DX,DX			; 2 bytes
+XOR     DX,DX           ; 2 bytes
 MOV     BL,2            ; Heads. 2 bytes
-DIV     EBX				; 3 bytes
+DIV     EBX             ; 3 bytes
 MOV     DH,DL           ; Head. 2 bytes
 MOV     DL,[BDRV]       ; Boot drive. 3-5 bytes
 XCHG    CH,AL           ; CH=Low 8 bits of cylinder number, AL=0 2 bytes
@@ -127,12 +127,12 @@ MOV     BP,3            ; Retry counter 3 bytes
 MOV     BX,7E00h        ; Buffer 3 bytes
 .Retry:
 MOV     AX,0201h        ; AL=Sectors to read 3 bytes
-INT     13h				; 2 bytes
-JC      .Error			; 2 bytes
-RET						; 1 byte
+INT     13h             ; 2 bytes
+JC      .Error          ; 2 bytes
+RET                     ; 1 byte
 .Error:
-DEC     BP				; 1 byte
-JNZ     .Retry			; near 8 or 16 bits
+DEC     BP              ; 1 byte
+JNZ     .Retry          ; near 8 or 16 bits
 JMP     SHORT $         ; 2 bytes
 
 ; Copy from buffer to protected mode
@@ -140,29 +140,29 @@ JMP     SHORT $         ; 2 bytes
 ;        DWORD [ADDR] - address to copy
 ; Out:   DWORD [ADDR] - added 512
 Copy:
-CLI						; 1 byte
-MOV     EAX,CR0			; 3 bytes
-OR      AL,1			; 2 bytes
+CLI                     ; 1 byte
+MOV     EAX,CR0         ; 3 bytes
+OR      AL,1            ; 2 bytes
 MOV     CR0,EAX         ; Go to pmode 3 bytes
 
 MOV     AX,DSEG         ; Null selectors to read/write 3 bytes
-MOV     DS,AX			; 2 bytes
-MOV     ES,AX			; 2 bytes
+MOV     DS,AX           ; 2 bytes
+MOV     ES,AX           ; 2 bytes
 MOV     ESI,7E00h       ; Buffer 3 bytes
-MOV     EDI,[ADDR]		; Address to copy 3 bytes
+MOV     EDI,[ADDR]      ; Address to copy 3 bytes
 MOV     ECX,512         ; Bytes to copy 3 bytes
 ADD     [ADDR],ECX      ; Next 512 bytes in the address 3 bytes
 REP                     ;
 A32                     ; Add32 for next instruction
 MOVSB                   ; Copy 2 byte together with REP and A32
-MOV     EAX,CR0			; 3 bytes
-AND     AL,0FEh			; 2 byte
+MOV     EAX,CR0         ; 3 bytes
+AND     AL,0FEh         ; 2 byte
 MOV 	CR0,EAX         ; 3 bytes
-PUSH    CS				; 1 byte
+PUSH    CS              ; 1 byte
 PUSH    CS              ; 1 byte (Restore segments)
-POP     DS				; 1 byte
-POP     ES				; 1 byte
-RET						; 1 byte
+POP     DS              ; 1 byte
+POP     ES              ; 1 byte
+RET                     ; 1 byte
 
 ; Selectors
 ; BYTE - [0:1]RPL,[2:2]table indicator, 0=GDT 1=LDT,[3:15]GDT descriptor
@@ -172,33 +172,33 @@ DSEG:   EQU     8*2
 GDT:
 
 ; Null segment (used for GDT start & length storage)
-DW      .ENDD-GDT ; limit 16bit
-DD      GDT       ; base 24bits + type 8bits
-DW      0         ; limit 4bits more + flags + base last bits 24-31
+DW      .ENDD-GDT           ; limit 16bit
+DD      GDT                 ; base 24bits + type 8bits
+DW      0                   ; limit 4bits more + flags + base last bits 24-31
 
 ; Code segment
 ; $-gdt, gdt2 label coming up next line
 DW      0FFFFh
 DW      0
 DB      0
-DB      10011010b ; (9ah) type (11111010 CODE-USER)
-DB      11001111b ; (cfh) last 4 is flags
+DB      10011010b           ; (9ah) type (11111010 CODE-USER)
+DB      11001111b           ; (cfh) last 4 is flags
 DB      0
 
 ; Data & stack segments
 DW      0FFFFh
 DW      0
 DB      0
-DB      10010010b ; (92h) present, ring0, data, expand up, writable (11110010 DATA&STACK-USER)
-DB      11001111b ; (cfh) page granular, 32bit
+DB      10010010b           ; (92h) present, ring0, data, expand up, writable (11110010 DATA&STACK-USER)
+DB      11001111b           ; (cfh) page granular, 32bit
 DB      0
 
 .ENDD:
-ADDR:   DD      00100000h       ; Physical address to copy
-SECT:   DW      100             ; Sectors to read from disk (w/o MBR)
-BDRV:   DB      0               ; Boot drive
-TIMES   510-($-$$) DB 0 		; Complete 510 bytes
-DW      0AA55h          		; MBR end signature
+ADDR:   DD      00100000h   ; Physical address to copy
+SECT:   DW      100         ; Sectors to read from disk (w/o MBR)
+BDRV:   DB      0           ; Boot drive
+TIMES   510-($-$$) DB 0     ; Complete 510 bytes
+DW      0AA55h              ; MBR end signature
 
 ; The 32-bit protected mode kernel code is loaded at 1 MB in physical RAM by the boot code
 BITS 32
@@ -244,27 +244,27 @@ mainloop:
 ; MPU READ
 MOV DX,817
 IN AL,DX
-AND AL,128             ; AL=PEEK(817) AND 128
-JNE SKIPMPUREAD        ; IF AL<>0 THEN GOTO SKIPMPUREAD
+AND AL,128              ; AL=PEEK(817) AND 128
+JNE SKIPMPUREAD         ; IF AL<>0 THEN GOTO SKIPMPUREAD
 MOV DX,816
 IN AL,DX
-MOV [524288+ECX],AL    ; [BUFFER+ECX] = PEEK(816)
+MOV [524288+ECX],AL     ; [BUFFER+ECX] = PEEK(816)
 INC ECX
-AND ECX,127            ; ECX=ECX+1 AND 127
+AND ECX,127             ; ECX=ECX+1 AND 127
 SKIPMPUREAD:
 CMP ECX,EBX
-JE SKIPSERIALWRITE     ; IF ECX=EBX THEN GOTO SKIPSERIALWRITE
+JE SKIPSERIALWRITE      ; IF ECX=EBX THEN GOTO SKIPSERIALWRITE
 
 ; SERIAL WRITE
 MOV DX,1021
 IN AL,DX
-AND AL,32              ; AL=PEEK(1021) AND 32
-JE SKIPSERIALWRITE     ; IF AL=0 THEN GOTO SKIPSERIALWRITE
-MOV AL,[524288+EBX]    ; AL = [BUFFER+EBX]
+AND AL,32               ; AL=PEEK(1021) AND 32
+JE SKIPSERIALWRITE      ; IF AL=0 THEN GOTO SKIPSERIALWRITE
+MOV AL,[524288+EBX]     ; AL = [BUFFER+EBX]
 INC EBX
-AND EBX,127            ; EBX=EBX+1 AND 127
+AND EBX,127             ; EBX=EBX+1 AND 127
 MOV DX,1016
-OUT DX,AL              ; POKE 1016,AL
+OUT DX,AL               ; POKE 1016,AL
 SKIPSERIALWRITE:
 
 ; SERIAL READ
@@ -294,4 +294,5 @@ OUT DX,AL               ; POKE 816,AL
 SKIPMPUWRITE:
 
 JMP mainloop
-; TIMES 1474560-($-$$) DB 0 ; Complete 1.44 MB floppy-sized image
+
+TIMES 1474560-($-$$) DB 0 ; Complete 1.44 MB floppy-sized image
