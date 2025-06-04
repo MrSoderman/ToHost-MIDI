@@ -1,4 +1,4 @@
-# Software ToHost-MIDI (real-time Serial to MPU-401 converter)
+# Software ToHost-MIDI (bi-directional real-time Serial <> MPU-401 converter)
 
 ## Installation Notes
 
@@ -29,7 +29,7 @@ To shut down, simply power off the computer.
 
 ### Functionality
 
-Emulates a MIDI ToHost device, transferring MIDI data between the serial port and MPU-401 interface in real time — with no lag or lost data.
+Emulates a MIDI ToHost device, transferring MIDI data between the serial port and MPU-401 interface in real time, bi-directional, with no lag or lost data.
 
 ---
 
