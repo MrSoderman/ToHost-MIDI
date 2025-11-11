@@ -50,5 +50,5 @@ Emulates a MIDI ToHost device, transferring MIDI data between the serial port an
 
 ### License
 
-MIT License © 2010 Jimmy Söderman Sers  
+MIT License © 2010 Mr Soderman  
 See the [LICENSE](LICENSE) file for full license text.

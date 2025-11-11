@@ -1,14 +1,14 @@
 
 ;
 ;  Project     : Serial-to-MIDI Converter (RS-232 to MPU-401)
-;  Author      : Jimmy Söderman Sers
+;  Author      : Mr Soderman
 ;  Created     : 2010
 ;  Description : Real-time, two-way MIDI bridge between a PC’s RS-232
 ;                serial port and an MPU-401 interface (intelligent mode
 ;                not required). Uses a circular buffer, no lag, and no dropped events.
 ;                Runs headless from bootable media, no monitor or keyboard needed.
 ;
-;  License     : Copyright © 2010 Jimmy Söderman Sers
+;  License     : Copyright © 2010 Mr Soderman
 ;
 ; To-host MIDI Standard:
 ; Used by Yamaha, Roland, Korg, Alesis, and others. Common around 1995–2005.
