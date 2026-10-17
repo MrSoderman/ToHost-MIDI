@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MIDI 1.0 Wall Chart · 80s Edition</title>
+<!-- EDITING: all text is plain HTML below. Colours/sizes live in :root.
+     Print to PDF from Chrome/Edge: A4, margins "None", background graphics ON. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Michroma&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+Condensed:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f6f2e9; --ink:#17171b; --mute:#5d5a55; --rule:#cfc8b8; --tint:#ebe5d6;
+  --accent:#ff5a1f;
+  --voice:#e4572e; --mode:#1f8f82; --common:#3a5a9b; --rt:#b0257a; --sx:#7a5c2e;
+  --sans:"IBM Plex Sans Condensed","Arial Narrow",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --display:"Archivo Black","Arial Black",sans-serif;
+  --fs:6.7pt;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+@page{size:A4;margin:0}
+html{background:#8a867d}
+body{font-family:var(--sans);font-size:var(--fs);line-height:1.24;color:var(--ink);background:#8a867d;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:210mm;height:297mm;background:var(--paper);margin:10mm auto;padding:7mm 8mm 6mm;display:flex;flex-direction:column;gap:2.3mm;overflow:hidden;position:relative;box-shadow:0 4px 24px rgba(0,0,0,.35)}
+@media print{html,body{background:var(--paper)}.page{margin:0;box-shadow:none;page-break-after:always}}
+@media screen and (max-width:820px){.page{transform-origin:top left}}
+
+/* ---------- header ---------- */
+.mast{background:var(--ink);color:var(--paper);border-radius:2.5mm;padding:2.4mm 5mm;display:flex;align-items:center;gap:5mm}
+.mast svg{flex:none}
+.mast h1{font-family:var(--display);font-weight:400;font-size:38pt;line-height:.9;letter-spacing:-.5pt}
+.mast h1 span{color:var(--accent)}
+.mast .sub{margin-left:auto;text-align:right;font-size:8pt;line-height:1.35;color:#d8d2c4}
+.mast .sub b{display:block;font-size:11.5pt;color:var(--paper);font-weight:700;letter-spacing:.2pt;margin-bottom:1mm}
+.mast.small{padding:2.6mm 5mm}
+.mast.small h1{font-size:22pt}
+
+/* ---------- blocks ---------- */
+h2{font-family:var(--display);font-weight:400;font-size:10pt;letter-spacing:.3pt;text-transform:uppercase;display:flex;align-items:center;gap:2mm;margin-bottom:1.6mm}
+h2::before{content:"";width:2.4mm;height:2.4mm;background:var(--accent);border-radius:50%}
+h3{font-size:7.4pt;font-weight:700;text-transform:uppercase;letter-spacing:.5pt;margin:1.8mm 0 .8mm;color:var(--ink)}
+p{margin-bottom:1.1mm}
+.mono,code{font-family:var(--mono);font-size:.96em;font-weight:600}
+.muted{color:var(--mute)}
+.row{display:grid;gap:4mm}
+.card{background:#fffdf8;border:.3mm solid var(--rule);border-radius:2mm;padding:2.2mm 2.6mm}
+.note{font-size:6.6pt;color:var(--mute)}
+
+/* stat tiles */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2mm;margin:1.4mm 0 1.6mm}
+.stat{border-left:.8mm solid var(--accent);padding:.4mm 0 .4mm 2mm}
+.stat b{display:block;font-family:var(--display);font-weight:400;font-size:12pt;line-height:1}
+.stat span{font-size:6.4pt;color:var(--mute)}
+
+/* byte anatomy */
+.byte{display:flex;gap:.6mm;margin:.8mm 0 .4mm}
+.bit{width:4.6mm;height:4.8mm;border-radius:1mm;display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:8pt;background:var(--tint)}
+.bit.one{background:var(--ink);color:var(--paper)}
+.bit.t{background:#f3c9b8}.bit.n{background:#cfe0f2}
+.bytelab{font-size:6.2pt;color:var(--mute)}
+.anat{display:flex;justify-content:space-between;align-items:center;gap:2mm;margin-top:1mm}
+.anat h3{margin:0}
+.anat .byte{margin:0}
+
+/* tables */
+table{width:100%;border-collapse:collapse;table-layout:auto}
+.cc td.d{padding-right:1mm}
+td,th{padding:.2mm .9mm;vertical-align:top;text-align:left}
+th{font-size:6.3pt;text-transform:uppercase;letter-spacing:.4pt;color:var(--mute);font-weight:600;border-bottom:.35mm solid var(--ink)}
+tr+tr td{border-top:.2mm solid #e3dccb}
+td.h{font-family:var(--mono);font-weight:600;white-space:nowrap}
+td.d{font-family:var(--mono);color:var(--mute);white-space:nowrap;text-align:right;padding-right:1.6mm}
+tr.grp td{background:var(--ink);color:var(--paper);font-weight:700;text-transform:uppercase;letter-spacing:.5pt;font-size:6.6pt;padding:.7mm 1.4mm;border:none}
+tr.grp td small{font-weight:400;text-transform:none;letter-spacing:0;color:#cfc8b8;font-size:6.3pt}
+tr.und td{color:#9a958a;font-style:italic}
+.tag{display:inline-block;white-space:nowrap;min-width:6.8mm;text-align:center;border-radius:.8mm;color:#fff;padding:0 .7mm;font-family:var(--mono);font-weight:600}
+.v{background:var(--voice)}.m{background:var(--mode)}.c{background:var(--common)}.r{background:var(--rt)}.x{background:var(--sx)}
+.zebra tr:nth-child(even) td{background:rgba(0,0,0,.022)}
+
+/* callouts */
+.callout{background:var(--accent);color:#fff;border-radius:2mm;padding:2.2mm 3mm;font-weight:600;font-size:7.4pt}
+.callout b{font-family:var(--display);font-weight:400}
+
+/* keyboard */
+.kb{display:flex;height:11mm;position:relative;margin:1mm 0 .6mm}
+.kb i{flex:1;border:.2mm solid #9d9686;border-left:none;background:#fff;position:relative;font-style:normal}
+.kb i:first-child{border-left:.2mm solid #9d9686}
+.kb i.blk::after{content:"";position:absolute;right:-28%;top:0;width:56%;height:62%;background:var(--ink);z-index:2;border-radius:0 0 .4mm .4mm}
+.kb i.mark{background:#ffe2d4}
+.kblab{display:flex;justify-content:space-between;font-family:var(--mono);font-size:6.1pt;color:var(--mute)}
+
+.sx{font-family:var(--mono);font-weight:600;font-size:6.6pt;background:var(--ink);color:#f1ead9;padding:.2mm 1.2mm;border-radius:.8mm;white-space:nowrap}
+.sx em{font-style:normal;color:#ffb38f}
+.cols2{columns:2;column-gap:4mm}
+.cols3{columns:3;column-gap:3mm}
+.cols4{display:grid;grid-template-columns:repeat(4,1fr);gap:2.4mm;align-items:start}
+.cols2>*,.cols3>*{break-inside:avoid}
+dl.ext dt{font-weight:700;margin-top:1mm}
+dl.ext dd{margin-bottom:.4mm}
+.foot{margin-top:auto;display:flex;justify-content:space-between;font-size:6.4pt;color:var(--mute);border-top:.3mm solid var(--ink);padding-top:1.4mm;letter-spacing:.3pt}
+.foot b{color:var(--ink)}
+
+/* ================= 80s EDITION — overrides (delete this block to get the light version back) ================= */
+:root{
+  --paper:#0b0a12; --ink:#ece8f5; --mute:#9e98b4; --rule:#2a2640; --tint:#24203a; --card:#14121e;
+  --accent:#ff2e88; --cyan:#2de2e6; --gold:#ffcf40; --orange:#ff8a00;
+  --voice:#ff2e88; --mode:#00b89c; --common:#4d6bff; --rt:#a43dff; --sx:#e07400;
+  --display:"Michroma","Eurostile","Arial Black",sans-serif;
+  --sunset:linear-gradient(90deg,#ffe14d,#ff8a00 35%,#ff2e88 70%,#a43dff);
+}
+html,body{background:#2a2733}
+.page{background:var(--paper);background-image:linear-gradient(rgba(45,226,230,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(45,226,230,.035) 1px,transparent 1px);background-size:6mm 6mm}
+.page::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3.2mm;background:linear-gradient(#ffe14d 0 22%,transparent 22% 34%,#ff8a00 34% 56%,transparent 56% 66%,#ff2e88 66% 100%)}
+@media print{html,body{background:var(--paper)}}
+.card{background:var(--card);border:.25mm solid var(--rule);border-top:.5mm solid var(--cyan);box-shadow:0 0 0 .2mm rgba(45,226,230,.06)}
+h2{font-family:var(--display);font-size:8.6pt;letter-spacing:.8pt;color:#fff;text-shadow:0 0 6px rgba(45,226,230,.55)}
+h2::before{width:6mm;height:2.6mm;border-radius:0;background:linear-gradient(#ffe14d 0 25%,transparent 25% 40%,#ff8a00 40% 62%,transparent 62% 75%,#ff2e88 75%)}
+h3{color:var(--gold)}
+.muted,.note{color:var(--mute)}
+th{color:var(--cyan);border-bottom:.3mm solid var(--cyan)}
+tr+tr td{border-top:.2mm solid rgba(255,255,255,.07)}
+tr.grp td{background:var(--sunset);color:#120e1c}
+tr.grp td small{color:rgba(18,14,28,.72)}
+tr.und td{color:#6f6986}
+td.d{color:var(--mute)}
+.zebra tr:nth-child(even) td{background:rgba(255,255,255,.03)}
+.tag{color:#fff;box-shadow:0 0 4px currentColor}
+.v{background:var(--voice)}.m{background:var(--mode)}.c{background:var(--common)}.r{background:var(--rt)}.x{background:var(--sx)}
+.sx{background:#000;color:#7df9ff;border:.2mm solid rgba(45,226,230,.6)}
+.sx em{color:var(--gold)}
+.stat{border-left:.8mm solid var(--accent)}
+.stat b{font-family:var(--display);font-size:10.5pt;color:#fff;letter-spacing:.3pt}
+.bit{background:var(--tint);color:var(--ink)}
+.bit.one{background:var(--cyan);color:#000}
+.bit.t{background:#ff2e88;color:#fff}.bit.n{background:#4d6bff;color:#fff}
+.callout{background:var(--sunset);color:#120e1c;box-shadow:0 0 10px rgba(255,46,136,.35)}
+.callout b{font-family:var(--display);font-size:7.6pt}
+.kb i{border-color:#55506b}
+.kb i.mark{background:#ffb3d6}
+.foot{border-top:.3mm solid var(--accent);color:var(--mute)}
+.foot b{color:#fff}
+.page{padding-bottom:7.2mm;gap:1.9mm}
+h2{margin-bottom:1.1mm}
+.kb i{background:#f4f1ff}
+.kb i.blk::after{background:#07060c}
+.kb i.mark{background:#ffb3d6}
+/* masthead */
+.mast{background:#07060c;border:.3mm solid #2a2640;position:relative;overflow:hidden;color:var(--ink)}
+.mast h1{font-family:var(--display);font-size:30pt;letter-spacing:1pt;line-height:1;
+  background:linear-gradient(180deg,#ffffff 0%,#dfe9ff 40%,#6a5c8f 50%,#ffb36b 53%,#fff2c8 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 5px rgba(45,226,230,.35))}
+.mast h1 span{background:linear-gradient(180deg,#ffe14d 0%,#ff8a00 50%,#ff2e88 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mast .sub{color:var(--mute)} .mast .sub b{color:#fff;font-family:var(--display);font-weight:400;font-size:8.5pt;letter-spacing:.6pt}
+.mast.front{padding:0 4mm 0 0;gap:4mm;height:31mm;align-items:stretch}
+.mast .sym{height:100%;width:auto;display:block;border-right:.3mm solid #2a2640}
+.mast .ttl{display:flex;flex-direction:column;justify-content:center;gap:1.2mm;flex:1;min-width:0}
+.mast.front h1{font-size:30pt}
+.kicker{font-family:var(--display);font-size:9pt;letter-spacing:2.2pt;text-transform:uppercase;color:var(--cyan);text-shadow:0 0 6px rgba(45,226,230,.6)}
+.sub2{font-size:7.2pt;color:var(--mute);line-height:1.4}
+.sub2 em{font-style:normal;color:var(--gold)}
+.mast .sun{height:100%;width:auto;flex:none;align-self:flex-end}
+.mast.small::after{content:"";position:absolute;right:0;top:0;bottom:0;width:38mm;background:linear-gradient(#ffe14d 0 14%,transparent 14% 24%,#ff8a00 24% 42%,transparent 42% 52%,#ff2e88 52% 74%,transparent 74% 82%,#a43dff 82%);clip-path:polygon(30% 0,100% 0,100% 100%,0 100%);opacity:.9}
+.mast.small .sub{position:relative;z-index:1;margin-right:34mm}
+</style>
+</head>
+<body>
+
+<!-- =====================================================  FRONT  ===================================================== -->
+<section class="page">
+  <header class="mast front">
+    <img class="sym" src="data:image/jpeg;base64,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" alt="MIDI symbol">
+    <div class="ttl">
+      <h1>MIDI <span>1.0</span></h1>
+      <div class="kicker">The complete MIDI standard</div>
+      <div class="sub2">Musical Instrument Digital Interface · 1983 · studio-wall reference<br><em>All bytes in hex · <code>n</code> = channel 0–F (ch 1–16)</em></div>
+    </div>
+    <svg class="sun" viewBox="0 0 120 90" aria-hidden="true">
+      <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe14d"/><stop offset=".5" stop-color="#ff8a00"/><stop offset="1" stop-color="#ff2e88"/></linearGradient>
+      <mask id="sm"><rect width="120" height="90" fill="#fff"/><g fill="#000"><rect y="34" width="120" height="1.6"/><rect y="40" width="120" height="2.2"/><rect y="46.5" width="120" height="2.8"/><rect y="53" width="120" height="3.4"/></g></mask></defs>
+      <circle cx="60" cy="58" r="34" fill="url(#sg)" mask="url(#sm)"/>
+      <rect x="0" y="58" width="120" height="32" fill="#07060c"/>
+      <g stroke="#2de2e6" stroke-width=".7" opacity=".85"><line x1="0" y1="58" x2="120" y2="58"/><line x1="0" y1="62" x2="120" y2="62"/><line x1="0" y1="67.5" x2="120" y2="67.5"/><line x1="0" y1="75" x2="120" y2="75"/><line x1="0" y1="85" x2="120" y2="85"/>
+      <line x1="60" y1="58" x2="60" y2="90"/><line x1="52" y1="58" x2="36" y2="90"/><line x1="68" y1="58" x2="84" y2="90"/><line x1="44" y1="58" x2="12" y2="90"/><line x1="76" y1="58" x2="108" y2="90"/><line x1="36" y1="58" x2="-12" y2="90"/><line x1="84" y1="58" x2="132" y2="90"/></g></svg>
+  </header>
+
+  <!-- ---------- LOW LEVEL ---------- -->
+  <div class="row" style="grid-template-columns:1.55fr 1fr">
+    <div class="card">
+      <h2>Low level · the wire</h2>
+      <div class="stats">
+        <div class="stat"><b>31 250</b><span>bit/s, ±1 % tolerance</span></div>
+        <div class="stat"><b>8-N-1</b><span>1 start + 8 data + 1 stop = 10 bits</span></div>
+        <div class="stat"><b>320 µs</b><span>per byte (10 ÷ 31 250 s)</span></div>
+        <div class="stat"><b>3 125</b><span>bytes/s per cable</span></div>
+      </div>
+      <p>Asynchronous serial: no shared clock, every byte is framed by its own start and stop bit. Each cable is one-way, so <b>IN</b> and <b>OUT</b> run independently: one byte in and one byte out every 320 µs. Bit period 1/31 250 = 32 µs.</p>
+      <p>5 mA current loop on a 5-pin DIN (pins 4 and 5 carry the signal, pin 2 is the shield and is grounded at OUT only). Every IN is opto-isolated to avoid ground loops. THRU passes a copy of IN.</p>
+    </div>
+    <div class="card">
+      <h2>Message anatomy</h2>
+      <p>1–3 bytes per message (SysEx: any length).</p>
+      <div class="anat"><div><h3>Status · 80–FF</h3><div class="bytelab"><span>bit 7 = 1 · type · channel</span></div></div><div class="byte"><i class="bit one">1</i><i class="bit t">t</i><i class="bit t">t</i><i class="bit t">t</i><i class="bit n">n</i><i class="bit n">n</i><i class="bit n">n</i><i class="bit n">n</i></div></div>
+      <div class="anat"><div><h3>Data · 00–7F</h3><div class="bytelab"><span>bit 7 = 0 · value 0–127</span></div></div><div class="byte"><i class="bit">0</i><i class="bit">v</i><i class="bit">v</i><i class="bit">v</i><i class="bit">v</i><i class="bit">v</i><i class="bit">v</i><i class="bit">v</i></div></div>
+      <p class="note" style="margin-top:.6mm">LSB + MSB data bytes = 14 bits (0–16 383): Pitch Bend, Song Position.</p>
+    </div>
+  </div>
+
+  <!-- ---------- MESSAGES + CC ---------- -->
+  <div class="row" style="grid-template-columns:.88fr 1.12fr;flex:1;min-height:0">
+    <div style="display:flex;flex-direction:column;gap:3mm">
+      <div class="card" style="padding:2mm 2.4mm">
+        <h2>Every message</h2>
+        <table>
+          <tr><th style="width:10.5mm">Status</th><th style="width:31%">Message</th><th style="width:25%">Data 1</th><th>Data 2</th></tr>
+          <tr class="grp"><td colspan="4">Channel Voice</td></tr>
+          <tr><td><span class="tag v">8n</span></td><td>Note Off</td><td>key</td><td>release velocity</td></tr>
+          <tr><td><span class="tag v">9n</span></td><td>Note On <span class="muted">· vel 00 = Off</span></td><td>key</td><td>attack velocity</td></tr>
+          <tr><td><span class="tag v">An</span></td><td>Polyphonic Key Pressure</td><td>key</td><td>pressure</td></tr>
+          <tr><td><span class="tag v">Bn</span></td><td>Control Change</td><td>controller 00–77</td><td>value</td></tr>
+          <tr><td><span class="tag v">Cn</span></td><td>Program Change</td><td>program 00–7F</td><td>–</td></tr>
+          <tr><td><span class="tag v">Dn</span></td><td>Channel Pressure</td><td>pressure</td><td>–</td></tr>
+          <tr><td><span class="tag v">En</span></td><td>Pitch Bend</td><td>LSB (00 = centre)</td><td>MSB (40 = centre)</td></tr>
+          <tr class="grp"><td colspan="4">Channel Mode <small>— sent as Control Change Bn 78–7F</small></td></tr>
+          <tr><td><span class="tag m">Bn 78</span></td><td>All Sound Off</td><td colspan="2">00</td></tr>
+          <tr><td><span class="tag m">Bn 79</span></td><td>Reset All Controllers</td><td colspan="2">00</td></tr>
+          <tr><td><span class="tag m">Bn 7A</span></td><td>Local Control</td><td colspan="2">00 = off · 7F = on</td></tr>
+          <tr><td><span class="tag m">Bn 7B</span></td><td>All Notes Off</td><td colspan="2">00</td></tr>
+          <tr><td><span class="tag m">Bn 7C</span></td><td>Omni Off <span class="muted">· own channel</span></td><td colspan="2">00</td></tr>
+          <tr><td><span class="tag m">Bn 7D</span></td><td>Omni On <span class="muted">· all channels</span></td><td colspan="2">00</td></tr>
+          <tr><td><span class="tag m">Bn 7E</span></td><td>Mono Mode On (Poly Off)</td><td colspan="2">no. of channels (00 = per voice)</td></tr>
+          <tr><td><span class="tag m">Bn 7F</span></td><td>Poly Mode On (Mono Off)</td><td colspan="2">00</td></tr>
+          <tr class="grp"><td colspan="4">System Common</td></tr>
+          <tr><td><span class="tag x">F0</span></td><td>System Exclusive start</td><td>manufacturer ID</td><td>data… until F7</td></tr>
+          <tr><td><span class="tag c">F1</span></td><td>MTC Quarter Frame</td><td>0ttt dddd</td><td>–</td></tr>
+          <tr><td><span class="tag c">F2</span></td><td>Song Position Pointer</td><td>LSB</td><td>MSB · in 16th notes</td></tr>
+          <tr><td><span class="tag c">F3</span></td><td>Song / Sequence Select</td><td>song no.</td><td>–</td></tr>
+          <tr><td><span class="tag c">F6</span></td><td>Tune Request</td><td>–</td><td>–</td></tr>
+          <tr><td><span class="tag x">F7</span></td><td>End of Exclusive (EOX)</td><td>–</td><td>–</td></tr>
+          <tr class="und"><td><span class="tag c" style="opacity:.45">F4 F5</span></td><td colspan="3">undefined</td></tr>
+          <tr class="grp"><td colspan="4">System Real-Time <small>— single byte, no data</small></td></tr>
+          <tr><td><span class="tag r">F8</span></td><td>Timing Clock</td><td colspan="2">24 per quarter note (24 PPQN)</td></tr>
+          <tr><td><span class="tag r">FA</span></td><td>Start</td><td colspan="2">play from song position 0</td></tr>
+          <tr><td><span class="tag r">FB</span></td><td>Continue</td><td colspan="2">play from current position</td></tr>
+          <tr><td><span class="tag r">FC</span></td><td>Stop</td><td colspan="2"></td></tr>
+          <tr><td><span class="tag r">FE</span></td><td>Active Sensing</td><td colspan="2">optional · gaps ≤ 300 ms once used</td></tr>
+          <tr><td><span class="tag r">FF</span></td><td>System Reset</td><td colspan="2">return to power-up state</td></tr>
+          <tr class="und"><td><span class="tag r" style="opacity:.45">F9 FD</span></td><td colspan="3">undefined (F9 once proposed as 10 ms “tick”)</td></tr>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- CC table -->
+    <div class="card" style="padding:2mm 2.4mm">
+      <h2>Control Change · Bn cc vv</h2>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2.4mm;align-items:start">
+      <div><table class="cc">
+        <tr><th style="width:7.5mm;text-align:right">Dec</th><th style="width:6.5mm">Hex</th><th>Controller</th></tr>
+        <tr class="grp"><td colspan="3">Coarse / MSB <small>— 0–127</small></td></tr>
+        <tr><td class="d">0</td><td class="h">00</td><td>Bank Select</td></tr>
+        <tr><td class="d">1</td><td class="h">01</td><td>Modulation Wheel</td></tr>
+        <tr><td class="d">2</td><td class="h">02</td><td>Breath Controller</td></tr>
+        <tr><td class="d">4</td><td class="h">04</td><td>Foot Controller</td></tr>
+        <tr><td class="d">5</td><td class="h">05</td><td>Portamento Time</td></tr>
+        <tr><td class="d">6</td><td class="h">06</td><td>Data Entry (MSB)</td></tr>
+        <tr><td class="d">7</td><td class="h">07</td><td>Channel Volume <span class="muted">(GM default 100)</span></td></tr>
+        <tr><td class="d">8</td><td class="h">08</td><td>Balance</td></tr>
+        <tr><td class="d">10</td><td class="h">0A</td><td>Pan <span class="muted">(64 = centre)</span></td></tr>
+        <tr><td class="d">11</td><td class="h">0B</td><td>Expression</td></tr>
+        <tr><td class="d">12</td><td class="h">0C</td><td>Effect Control 1</td></tr>
+        <tr><td class="d">13</td><td class="h">0D</td><td>Effect Control 2</td></tr>
+        <tr><td class="d">16–19</td><td class="h">10–13</td><td>Gen. Purpose 1–4</td></tr>
+        <tr class="und"><td colspan="3">3, 9, 14, 15, 20–31 undefined</td></tr>
+        <tr class="grp"><td colspan="3">Fine / LSB <small>— adds precision, 0–16 383</small></td></tr>
+        <tr><td class="d">32–63</td><td class="h">20–3F</td><td>LSB of CC 0–31 (n+32)</td></tr>
+        <tr class="grp"><td colspan="3">Switches <small>— 0–63 off · 64–127 on</small></td></tr>
+        <tr><td class="d">64</td><td class="h">40</td><td>Sustain (Damper / Hold 1)</td></tr>
+        <tr><td class="d">65</td><td class="h">41</td><td>Portamento On/Off</td></tr>
+        <tr><td class="d">66</td><td class="h">42</td><td>Sostenuto</td></tr>
+        <tr><td class="d">67</td><td class="h">43</td><td>Soft Pedal</td></tr>
+        <tr><td class="d">68</td><td class="h">44</td><td>Legato Footswitch</td></tr>
+        <tr><td class="d">69</td><td class="h">45</td><td>Hold 2</td></tr>
+        <tr class="grp"><td colspan="3">Sound controllers</td></tr>
+        <tr><td class="d">70</td><td class="h">46</td><td>SC 1 · Sound Variation</td></tr>
+        <tr><td class="d">71</td><td class="h">47</td><td>SC 2 · Timbre / Resonance</td></tr>
+        <tr><td class="d">72</td><td class="h">48</td><td>SC 3 · Release Time</td></tr>
+        <tr><td class="d">73</td><td class="h">49</td><td>SC 4 · Attack Time</td></tr>
+        <tr><td class="d">74</td><td class="h">4A</td><td>SC 5 · Brightness (Cutoff)</td></tr>
+        <tr><td class="d">75</td><td class="h">4B</td><td>SC 6 · Decay Time</td></tr>
+        <tr><td class="d">76</td><td class="h">4C</td><td>SC 7 · Vibrato Rate</td></tr>
+        <tr><td class="d">77</td><td class="h">4D</td><td>SC 8 · Vibrato Depth</td></tr>
+        <tr><td class="d">78</td><td class="h">4E</td><td>SC 9 · Vibrato Delay</td></tr>
+        <tr class="und"><td class="d">79</td><td class="h">4F</td><td>SC 10 · undefined</td></tr>
+      </table></div>
+      <div><table class="cc">
+        <tr><th style="width:7.5mm;text-align:right">Dec</th><th style="width:6.5mm">Hex</th><th>Controller</th></tr>
+        <tr class="grp"><td colspan="3">More</td></tr>
+        <tr><td class="d">80–83</td><td class="h">50–53</td><td>Gen. Purpose 5–8</td></tr>
+        <tr><td class="d">84</td><td class="h">54</td><td>Portamento Control</td></tr>
+        <tr><td class="d">88</td><td class="h">58</td><td>High-Res Velocity Prefix</td></tr>
+        <tr><td class="d">91</td><td class="h">5B</td><td>Effects 1 · Reverb Send</td></tr>
+        <tr><td class="d">92</td><td class="h">5C</td><td>Effects 2 · Tremolo</td></tr>
+        <tr><td class="d">93</td><td class="h">5D</td><td>Effects 3 · Chorus Send</td></tr>
+        <tr><td class="d">94</td><td class="h">5E</td><td>Effects 4 · Celeste (Detune)</td></tr>
+        <tr><td class="d">95</td><td class="h">5F</td><td>Effects 5 · Phaser</td></tr>
+        <tr><td class="d">96</td><td class="h">60</td><td>Data Increment (+1)</td></tr>
+        <tr><td class="d">97</td><td class="h">61</td><td>Data Decrement (−1)</td></tr>
+        <tr><td class="d">98</td><td class="h">62</td><td>NRPN LSB</td></tr>
+        <tr><td class="d">99</td><td class="h">63</td><td>NRPN MSB</td></tr>
+        <tr><td class="d">100</td><td class="h">64</td><td>RPN LSB</td></tr>
+        <tr><td class="d">101</td><td class="h">65</td><td>RPN MSB</td></tr>
+        <tr class="und"><td colspan="3">85–87, 89–90, 102–119 undefined</td></tr>
+        <tr><td class="d">120–127</td><td class="h">78–7F</td><td>Channel Mode (see left)</td></tr>
+      </table>
+      <h3>Registered parameters (RPN 101/100)</h3>
+      <table>
+        <tr><td class="h">00 00</td><td>Pitch Bend Sensitivity</td></tr>
+        <tr><td class="h">00 01</td><td>Fine Tuning · <b class="mono">00 02</b> Coarse Tuning</td></tr>
+        <tr><td class="h">00 03</td><td>Tuning Program · <b class="mono">00 04</b> Tuning Bank</td></tr>
+        <tr><td class="h">00 05</td><td>Modulation Depth Range (GM2)</td></tr>
+        <tr><td class="h">7F 7F</td><td>RPN Null: closes the parameter</td></tr>
+      </table>
+      <p style="margin-top:1mm">Bend range ±12 on ch 1 (running status):<br><span class="sx">B0 65 00 64 00 06 0C</span> then close <span class="sx">65 7F 64 7F</span></p>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="grid-template-columns:1fr 1fr 1fr;gap:3mm">
+<div class="card">
+          <h3 style="margin-top:0">Receiver modes</h3>
+          <table>
+            <tr><td class="h">1</td><td>Omni On · Poly</td><td class="muted">all ch → polyphonic</td></tr>
+            <tr><td class="h">2</td><td>Omni On · Mono</td><td class="muted">all ch → one voice</td></tr>
+            <tr><td class="h">3</td><td>Omni Off · Poly</td><td class="muted">own ch → poly</td></tr>
+            <tr><td class="h">4</td><td>Omni Off · Mono</td><td class="muted">one ch per voice</td></tr>
+          </table>
+          <p class="note" style="margin-top:.8mm">Mode messages 7C–7F also act as All Notes Off.</p>
+        </div>
+<div class="card">
+          <h3 style="margin-top:0">Running status</h3>
+          <p>Consecutive channel messages with the same status byte need the status sent only once. Real-time bytes don't cancel it; System Common and SysEx do. Note On with velocity 00 = Note Off, which keeps running status going.</p>
+        </div>
+<div class="callout"><b>REAL-TIME CUTS IN.</b> F8–FF may be inserted anywhere in the stream, even in the middle of another message. Receivers must handle them without losing the message they are parsing.</div>
+  </div>
+
+  <!-- ---------- bottom strip ---------- -->
+  <div class="row" style="grid-template-columns:1.18fr 1fr">
+    <div class="card">
+      <h3 style="margin-top:0">Note numbers <span class="muted" style="text-transform:none;font-weight:400;letter-spacing:0">0–127 · C-1 to G9</span></h3>
+      <div class="kb" id="kb"></div>
+      <div class="kblab"><span>A0 = 21</span><span>Middle C (C4) = 60</span><span>A4 = 69 = 440 Hz</span><span>C8 = 108</span></div>
+      <p class="note" style="margin-top:.8mm">Grand piano: 88 keys, notes 21–108. Yamaha names middle C “C3”; the note number is still 60.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">MIDI Clock &amp; PPQN</h3>
+      <p>F8 is a steady pulse at <b>24 PPQN</b> (pulses per quarter note). After 24 clocks every device knows a quarter note has passed. Devices run faster internal clocks (48, 96, 480…) and convert. It syncs tempo (arpeggiators, BPM-based delays) but carries <b>no position</b>, so use it with Song Position Pointer or timecode. It can drift, so studios often add word clock or ADAT sync.</p>
+    </div>
+  </div>
+
+  <footer class="foot"><span>Written by <b>Jimmy Söderman</b></span><span>© 2021–2026 · free for non-commercial use</span><span>Front · 1 / 2</span></footer>
+</section>
+
+<!-- =====================================================  BACK  ===================================================== -->
+<section class="page">
+  <header class="mast small">
+    <h1>MIDI <span>1.0</span></h1>
+    <div class="sub" style="font-size:7.6pt"><b style="font-size:10.5pt">SysEx · GM / GS / XG · Extensions</b>Back: the addenda built on top of the 1983 core</div>
+  </header>
+
+  <!-- SYSEX -->
+  <div class="row" style="grid-template-columns:1fr 1.15fr">
+    <div class="card">
+      <h2>System Exclusive</h2>
+      <p><span class="sx">F0 <em>id</em> <em>data…</em> F7</span>  data bytes are 7-bit (00–7F), any length.</p>
+      <table style="margin-top:1mm">
+        <tr><td class="h">01–7C</td><td>1-byte manufacturer ID</td></tr>
+        <tr><td class="h">00 xx xx</td><td>3-byte extended ID</td></tr>
+        <tr><td class="h">7D</td><td>Non-commercial / education</td></tr>
+        <tr><td class="h">7E</td><td>Universal <b>Non-Real-Time</b></td></tr>
+        <tr><td class="h">7F</td><td>Universal <b>Real-Time</b></td></tr>
+      </table>
+      <p style="margin-top:1mm">Universal: <span class="sx">F0 7E|7F <em>dev</em> <em>sub1</em> <em>sub2</em> … F7</span>  <span class="muted">dev 7F = all devices.</span></p>
+      <h3>Common manufacturer IDs</h3>
+      <div class="cols2" style="column-gap:3mm">
+        <table>
+          <tr><td class="h">01</td><td>Sequential</td></tr>
+          <tr><td class="h">04</td><td>Moog</td></tr>
+          <tr><td class="h">07</td><td>Kurzweil</td></tr>
+          <tr><td class="h">10</td><td>Oberheim</td></tr>
+          <tr><td class="h">18</td><td>E-mu</td></tr>
+          <tr><td class="h">40</td><td>Kawai</td></tr>
+        </table>
+        <table>
+          <tr><td class="h">41</td><td>Roland</td></tr>
+          <tr><td class="h">42</td><td>Korg</td></tr>
+          <tr><td class="h">43</td><td>Yamaha</td></tr>
+          <tr><td class="h">44</td><td>Casio</td></tr>
+          <tr><td class="h">47</td><td>Akai</td></tr>
+          <tr><td class="h">00 20 29</td><td>Novation</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Ready-to-send SysEx</h2>
+      <table>
+        <tr><td>GM 1 System On</td><td><span class="sx">F0 7E 7F 09 01 F7</span></td></tr>
+        <tr><td>GM System Off</td><td><span class="sx">F0 7E 7F 09 02 F7</span></td></tr>
+        <tr><td>GM 2 System On</td><td><span class="sx">F0 7E 7F 09 03 F7</span></td></tr>
+        <tr><td style="white-space:nowrap">GS Reset (Roland)</td><td><span class="sx">F0 41 10 42 12 40 00 7F 00 41 F7</span></td></tr>
+        <tr><td style="white-space:nowrap">XG On (Yamaha)</td><td><span class="sx">F0 43 10 4C 00 00 7E 00 F7</span></td></tr>
+        <tr><td>Master Volume</td><td><span class="sx">F0 7F 7F 04 01 <em>ll mm</em> F7</span></td></tr>
+        <tr><td>Master Balance</td><td><span class="sx">F0 7F 7F 04 02 <em>ll mm</em> F7</span></td></tr>
+        <tr><td>Identity Request</td><td><span class="sx">F0 7E 7F 06 01 F7</span></td></tr>
+        <tr><td>Identity Reply</td><td><span class="sx">F0 7E <em>dev</em> 06 02 <em>mfr fam fam mod mod ver×4</em> F7</span></td></tr>
+        <tr><td>MTC Full Frame</td><td><span class="sx">F0 7F 7F 01 01 <em>hr mn sc fr</em> F7</span></td></tr>
+        <tr><td>MMC Play / Stop</td><td><span class="sx">F0 7F 7F 06 02 F7</span> / <span class="sx">… 06 01 F7</span></td></tr>
+      </table>
+      <p class="note" style="margin-top:1mm"><b>Roland checksum</b>: add the address and data bytes, then checksum = (128 − sum mod 128) mod 128. GS Reset: 40+00+7F+00 = BF; BF mod 80 = 3F; 80 − 3F = <b>41</b>.</p>
+    </div>
+  </div>
+
+  <div class="row" style="grid-template-columns:1fr 1fr 1fr">
+    <div class="card">
+      <h3 style="margin-top:0">Universal Non-RT · 7E sub-IDs</h3>
+      <table>
+        <tr><td class="h">01–03</td><td>Sample Dump: header · packet · request</td></tr>
+        <tr><td class="h">04</td><td>MIDI Time Code cueing</td></tr>
+        <tr><td class="h">05</td><td>Sample Dump extensions</td></tr>
+        <tr><td class="h">06</td><td>General Info (identity)</td></tr>
+        <tr><td class="h">07</td><td>File Dump</td></tr>
+        <tr><td class="h">08</td><td>MIDI Tuning Standard</td></tr>
+        <tr><td class="h">09</td><td>General MIDI on/off</td></tr>
+        <tr><td class="h">7B–7F</td><td>EOF · Wait · Cancel · NAK · ACK</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Universal RT · 7F sub-IDs</h3>
+      <table>
+        <tr><td class="h">01</td><td>MIDI Time Code (full frame)</td></tr>
+        <tr><td class="h">02</td><td>MIDI Show Control</td></tr>
+        <tr><td class="h">03</td><td>Notation information</td></tr>
+        <tr><td class="h">04</td><td>Device Control (master vol/bal)</td></tr>
+        <tr><td class="h">05</td><td>Real-time MTC cueing</td></tr>
+        <tr><td class="h">06</td><td>MMC commands</td></tr>
+        <tr><td class="h">07</td><td>MMC responses</td></tr>
+        <tr><td class="h">08</td><td>MIDI Tuning (real-time)</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">MMC · <span class="mono" style="text-transform:none">F0 7F dev 06 cc F7</span></h3>
+      <table>
+        <tr><td class="h">01</td><td>Stop</td><td class="h">07</td><td>Record Exit</td></tr>
+        <tr><td class="h">02</td><td>Play</td><td class="h">08</td><td>Record Pause</td></tr>
+        <tr><td class="h">03</td><td>Deferred Play</td><td class="h">09</td><td>Pause</td></tr>
+        <tr><td class="h">04</td><td>Fast Forward</td><td class="h">0A</td><td>Eject</td></tr>
+        <tr><td class="h">05</td><td>Rewind</td><td class="h">0B</td><td>Chase</td></tr>
+        <tr><td class="h">06</td><td>Record Strobe</td><td class="h">0D</td><td>MMC Reset</td></tr>
+      </table>
+      <p class="note" style="margin-top:.8mm">Locate: <span class="mono">F0 7F dev 06 44 06 01 hr mn sc fr sf F7</span></p>
+    </div>
+  </div>
+
+  <!-- GM GS XG -->
+  <div class="card">
+    <h2>GM · GS · XG · GM2</h2>
+    <div class="row" style="grid-template-columns:repeat(4,1fr);gap:3mm">
+      <div><h3 style="margin-top:0;color:var(--voice)">General MIDI 1 · 1991</h3><p>MMA/JMSC baseline. 128 programs in 16 families; drums on <b>channel 10</b> (keys 35–81); ≥ 24 voices; 16 channels. Must respond to CC 1, 7, 10, 11, 64, 121, 123, RPN 0–2, bend and channel pressure.</p></div>
+      <div><h3 style="margin-top:0;color:var(--common)">GS · Roland 1991</h3><p>GM superset (SC-55). Variation tones via <b>CC 0 / CC 32</b>. Drum kits by Program Change on ch 10: Standard 1, Room 9, Power 17, Electronic 25, TR-808 26, Jazz 33, Brush 41, Orchestra 49, SFX 57. NRPN edits for filter, envelope and vibrato.</p></div>
+      <div><h3 style="margin-top:0;color:var(--rt)">XG · Yamaha 1994</h3><p>GM superset (MU80). Bank MSB: <b>0</b> normal (LSB = variation), <b>64</b> SFX voices, <b>126</b> SFX kits, <b>127</b> drum kits, so any channel can play drums. ≥ 32 voices; reverb, chorus and variation effects.</p></div>
+      <div><h3 style="margin-top:0;color:var(--mode)">General MIDI 2 · 1999</h3><p>Standardises GS/XG ideas. Bank MSB <b>79h</b> = melodic, <b>78h</b> = rhythm; LSB picks the variation. ≥ 32 voices, two drum channels (10, 11), more CCs and RPN 05, plus master tuning and effect SysEx.</p></div>
+    </div>
+  </div>
+
+  <div class="row" style="grid-template-columns:.8fr 1.2fr;flex:1;min-height:0">
+    <div class="card">
+      <h3 style="margin-top:0">GM program families <span class="muted" style="text-transform:none;font-weight:400;letter-spacing:0">(1-based; send value − 1)</span></h3>
+      <table class="zebra">
+        <tr><td class="d">1–8</td><td>Piano</td><td class="d">65–72</td><td>Reed</td></tr>
+        <tr><td class="d">9–16</td><td>Chromatic Perc.</td><td class="d">73–80</td><td>Pipe</td></tr>
+        <tr><td class="d">17–24</td><td>Organ</td><td class="d">81–88</td><td>Synth Lead</td></tr>
+        <tr><td class="d">25–32</td><td>Guitar</td><td class="d">89–96</td><td>Synth Pad</td></tr>
+        <tr><td class="d">33–40</td><td>Bass</td><td class="d">97–104</td><td>Synth Effects</td></tr>
+        <tr><td class="d">41–48</td><td>Strings</td><td class="d">105–112</td><td>Ethnic</td></tr>
+        <tr><td class="d">49–56</td><td>Ensemble</td><td class="d">113–120</td><td>Percussive</td></tr>
+        <tr><td class="d">57–64</td><td>Brass</td><td class="d">121–128</td><td>Sound Effects</td></tr>
+      </table>
+      <h3>File formats</h3>
+      <p><b>.MID</b> is the Standard MIDI File (<b>SMF</b>): type 0 = one track, 1 = parallel tracks, 2 = independent patterns. <b>.KAR</b> is SMF with karaoke lyrics. Both usually target GM, GS, XG or GM2 so they play anywhere. Professionals use DAW project formats instead, which also store setup, audio, effects and takes. Ways to ship custom sounds without rendering audio: <b>DLS, SF2, RMID, XMF, XMI, SP-MIDI</b>.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">GM drum map · channel 10</h3>
+      <div class="cols4" style="font-size:6.5pt">
+        <table class="zebra"><tr><td class="d">35</td><td>Acoustic Bass Dr.</td></tr><tr><td class="d">36</td><td>Bass Drum 1</td></tr><tr><td class="d">37</td><td>Side Stick</td></tr><tr><td class="d">38</td><td>Acoustic Snare</td></tr><tr><td class="d">39</td><td>Hand Clap</td></tr><tr><td class="d">40</td><td>Electric Snare</td></tr><tr><td class="d">41</td><td>Low Floor Tom</td></tr><tr><td class="d">42</td><td>Closed Hi-Hat</td></tr><tr><td class="d">43</td><td>High Floor Tom</td></tr><tr><td class="d">44</td><td>Pedal Hi-Hat</td></tr><tr><td class="d">45</td><td>Low Tom</td></tr><tr><td class="d">46</td><td>Open Hi-Hat</td></tr></table>
+        <table class="zebra"><tr><td class="d">47</td><td>Low-Mid Tom</td></tr><tr><td class="d">48</td><td>Hi-Mid Tom</td></tr><tr><td class="d">49</td><td>Crash Cymbal 1</td></tr><tr><td class="d">50</td><td>High Tom</td></tr><tr><td class="d">51</td><td>Ride Cymbal 1</td></tr><tr><td class="d">52</td><td>Chinese Cymbal</td></tr><tr><td class="d">53</td><td>Ride Bell</td></tr><tr><td class="d">54</td><td>Tambourine</td></tr><tr><td class="d">55</td><td>Splash Cymbal</td></tr><tr><td class="d">56</td><td>Cowbell</td></tr><tr><td class="d">57</td><td>Crash Cymbal 2</td></tr><tr><td class="d">58</td><td>Vibraslap</td></tr></table>
+        <table class="zebra"><tr><td class="d">59</td><td>Ride Cymbal 2</td></tr><tr><td class="d">60</td><td>Hi Bongo</td></tr><tr><td class="d">61</td><td>Low Bongo</td></tr><tr><td class="d">62</td><td>Mute Hi Conga</td></tr><tr><td class="d">63</td><td>Open Hi Conga</td></tr><tr><td class="d">64</td><td>Low Conga</td></tr><tr><td class="d">65</td><td>High Timbale</td></tr><tr><td class="d">66</td><td>Low Timbale</td></tr><tr><td class="d">67</td><td>High Agogo</td></tr><tr><td class="d">68</td><td>Low Agogo</td></tr><tr><td class="d">69</td><td>Cabasa</td></tr><tr><td class="d">70</td><td>Maracas</td></tr></table>
+        <table class="zebra"><tr><td class="d">71</td><td>Short Whistle</td></tr><tr><td class="d">72</td><td>Long Whistle</td></tr><tr><td class="d">73</td><td>Short Guiro</td></tr><tr><td class="d">74</td><td>Long Guiro</td></tr><tr><td class="d">75</td><td>Claves</td></tr><tr><td class="d">76</td><td>Hi Wood Block</td></tr><tr><td class="d">77</td><td>Low Wood Block</td></tr><tr><td class="d">78</td><td>Mute Cuica</td></tr><tr><td class="d">79</td><td>Open Cuica</td></tr><tr><td class="d">80</td><td>Mute Triangle</td></tr><tr><td class="d">81</td><td>Open Triangle</td></tr></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXTENSIONS -->
+  <div class="card">
+    <h2>MIDI extensions</h2>
+    <dl class="ext cols3" style="column-gap:4mm">
+      <div><dt>Sample Dump Standard (SDS)</dt><dd>Moves samples between devices as 120-byte SysEx packets with ACK/NAK/Wait handshaking (7E 01–03).</dd></div>
+      <div><dt>MIDI Time Code (MTC)</dt><dd>SMPTE time (hh:mm:ss:ff at 24, 25, 29.97 drop or 30 fps) carried as 8 F1 quarter frames per 2 frames, plus SysEx full frames for jumps. Wraps after 24 h. Give it its own port on a busy bus to avoid jitter.</dd></div>
+      <div><dt>MIDI Machine Control (MMC)</dt><dd>Transport for recorders and DAWs: play, stop, FF/rewind, pause, record, shuttle, locate/goto, cueing, record-ready. SysEx (7F … 06).</dd></div>
+      <div><dt>MIDI Show Control (MSC)</dt><dd>Real-time cues for lighting, sound, machinery and pyro in live and canned shows. Each cue in the controller's list maps to an MSC message; many devices now run it over Ethernet. SysEx (7F … 02).</dd></div>
+      <div><dt>MIDI Tuning Standard (MTS)</dt><dd>A tuning for each note: bulk dump request, bulk dump, and real-time single-note change. <span class="mono">note xx yy</span>: xx yy split a semitone into 16 384 steps (≈ 0.0061 cent).</dd></div>
+      <div><dt>MIDI Visual Control (MVC)</dt><dd>Lets MIDI drive video and visual presentation gear, using SysEx and ordinary channel messages.</dd></div>
+      <div><dt>3D Sound Control</dt><dd>RPNs for azimuth, elevation, distance and more, so synths can place sounds in 3D. All values 14-bit.</dd></div>
+      <div><dt>MIDI 2.0 · 2020</dt><dd>Universal MIDI Packet (32-bit words), 16 groups × 16 channels, 16-bit velocity, 32-bit controllers, per-note pitch and controllers, MIDI-CI negotiation and Property Exchange. Falls back to 1.0.</dd></div>
+    </dl>
+  </div>
+
+  <footer class="foot"><span>Written by <b>Jimmy Söderman</b></span><span>© 2021–2026 · free for non-commercial use</span><span>Back · 2 / 2</span></footer>
+</section>
+
+<script>
+/* Draws the A0–C8 keyboard strip (52 white keys). Marks A0, C4, A4, C8. */
+(function(){
+  var kb=document.getElementById('kb'); if(!kb) return;
+  var names=['A','B','C','D','E','F','G'], hasBlack={A:1,C:1,D:1,F:1,G:1};
+  var oct=0, html='';
+  for(var i=0;i<52;i++){
+    var n=names[i%7]; if(n==='C'&&i>0) oct++;
+    var label=n+oct, cls=[];
+    if(hasBlack[n] && i<51) cls.push('blk');
+    if(label==='A0'||label==='C4'||label==='A4'||label==='C8') cls.push('mark');
+    html+='<i class="'+cls.join(' ')+'" title="'+label+'"></i>';
+  }
+  kb.innerHTML=html;
+})();
+</script>
+</body>
+</html>

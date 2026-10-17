@@ -1,5 +1,7 @@
 # Software ToHost-MIDI (bi-directional real-time Serial <> MPU-401 converter)
 
+![MIDI Logo](midi.png)
+
 ## Installation Notes
 
 ---
